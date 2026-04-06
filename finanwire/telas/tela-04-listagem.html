@@ -1,0 +1,306 @@
+<!DOCTYPE html>
+<html lang="pt-BR">
+<head>
+  <meta charset="UTF-8"/>
+  <meta name="viewport" content="width=device-width, initial-scale=1.0"/>
+  <title>Listagem — FinanceIA</title>
+  <link rel="stylesheet" href="../css/global.css"/>
+  <link rel="stylesheet" href="../css/app-layout.css"/>
+  <style>
+    .toolbar { display:flex; flex-wrap:wrap; align-items:center; gap:10px; padding:14px 20px; border-bottom:1px solid var(--border); }
+    .search-wrap { position:relative; flex:1; min-width:200px; }
+    .search-wrap svg { position:absolute; left:10px; top:50%; transform:translateY(-50%); width:15px; height:15px; stroke:var(--muted); fill:none; }
+    .search-wrap input { padding-left:32px; }
+    .select-sm { padding:6px 10px; font-size:13px; border:1px solid var(--border); border-radius:var(--radius); background:#fff; color:var(--text); outline:none; }
+    .prog-cell { display:flex; align-items:center; gap:8px; min-width:100px; }
+    .table-footer { padding:10px 20px; border-top:1px solid var(--border); font-size:12px; color:var(--muted); display:flex; align-items:center; justify-content:space-between; }
+    .pagination { display:flex; align-items:center; gap:2px; }
+    .page-btn { width:28px; height:28px; border-radius:4px; border:none; font-size:12px; font-weight:500; cursor:pointer; background:transparent; color:var(--muted); transition:background .15s; }
+    .page-btn:hover   { background:#F3F4F6; }
+    .page-btn.active  { background:var(--cobalt); color:#fff; }
+    .page-btn:disabled{ opacity:.4; cursor:default; }
+    .more-btn { background:none; border:none; cursor:pointer; padding:4px; border-radius:4px; color:var(--muted); }
+    .more-btn:hover { background:#F3F4F6; }
+    .more-btn svg { width:15px; height:15px; stroke:currentColor; fill:none; display:block; }
+    .dl-link { display:inline-flex; align-items:center; gap:5px; font-size:12px; font-weight:500; color:var(--cobalt); background:none; border:none; cursor:pointer; }
+    .dl-link svg { width:13px; height:13px; stroke:currentColor; fill:none; }
+  </style>
+</head>
+<body>
+<div class="app-shell" id="app"></div>
+<script src="../js/sidebar.js"></script>
+<script>
+renderLayout({
+  page:'tela-04-listagem.html',
+  title:'Listagem e Consulta',
+  breadcrumbs:[{label:'Dashboard',href:'tela-02-dashboard.html'},{label:'Listagem'}]
+});
+
+const EMPRESAS = [
+  {id:1,razao:'Construtora Alpha Ltda',cnpj:'12.345.678/0001-90',seg:'Construção Civil',analista:'Tessália S.',status:'Ativo',docs:18,rel:6,prog:100},
+  {id:2,razao:'Comércio Beta S.A.',cnpj:'98.765.432/0001-10',seg:'Comércio',analista:'Alessandro W.',status:'Ativo',docs:14,rel:4,prog:67},
+  {id:3,razao:'Indústria Gamma ME',cnpj:'11.222.333/0001-44',seg:'Indústria',analista:'Samara M.',status:'Ativo',docs:9,rel:3,prog:33},
+  {id:4,razao:'Serviços Delta Eireli',cnpj:'55.666.777/0001-88',seg:'Serviços',analista:'Marlon P.',status:'Ativo',docs:6,rel:2,prog:0},
+  {id:5,razao:'Tech Epsilon Ltda',cnpj:'33.444.555/0001-22',seg:'Tecnologia',analista:'Gabriel R.',status:'Ativo',docs:21,rel:7,prog:100},
+  {id:6,razao:'Agro Zeta S.A.',cnpj:'77.888.999/0001-33',seg:'Agronegócio',analista:'Tessália S.',status:'Inativo',docs:12,rel:4,prog:100},
+  {id:7,razao:'Saúde Eta Ltda',cnpj:'22.333.444/0001-55',seg:'Saúde',analista:'Alessandro W.',status:'Ativo',docs:15,rel:5,prog:100},
+  {id:8,razao:'Logística Theta ME',cnpj:'44.555.666/0001-77',seg:'Serviços',analista:'Samara M.',status:'Ativo',docs:8,rel:2,prog:67},
+];
+const DOCS = [
+  {id:1,empresa:'Construtora Alpha Ltda',tipo:'DRE',periodo:'Fev/2026',status:'Processado',conf:98,enviado:'05/03/2026'},
+  {id:2,empresa:'Construtora Alpha Ltda',tipo:'Balanço Patrimonial',periodo:'Fev/2026',status:'Processado',conf:95,enviado:'05/03/2026'},
+  {id:3,empresa:'Comércio Beta S.A.',tipo:'DRE',periodo:'Fev/2026',status:'Em Processamento',conf:null,enviado:'06/03/2026'},
+  {id:4,empresa:'Comércio Beta S.A.',tipo:'Balancete',periodo:'Fev/2026',status:'Revisão Necessária',conf:62,enviado:'06/03/2026'},
+  {id:5,empresa:'Indústria Gamma ME',tipo:'DRE',periodo:'Jan/2026',status:'Processado',conf:91,enviado:'15/02/2026'},
+  {id:6,empresa:'Tech Epsilon Ltda',tipo:'Balanço Patrimonial',periodo:'Fev/2026',status:'Processado',conf:99,enviado:'04/03/2026'},
+  {id:7,empresa:'Serviços Delta Eireli',tipo:'DRE',periodo:'Jan/2026',status:'Pendente',conf:null,enviado:'—'},
+];
+const RELATORIOS = [
+  {id:1,empresa:'Construtora Alpha Ltda',periodo:'Fev/2026',gerado:'06/03/2026',analista:'Tessália S.',validado:true,disclaimer:false},
+  {id:2,empresa:'Tech Epsilon Ltda',periodo:'Fev/2026',gerado:'05/03/2026',analista:'Gabriel R.',validado:true,disclaimer:false},
+  {id:3,empresa:'Indústria Gamma ME',periodo:'Jan/2026',gerado:'20/02/2026',analista:'Samara M.',validado:true,disclaimer:false},
+  {id:4,empresa:'Comércio Beta S.A.',periodo:'Jan/2026',gerado:'18/02/2026',analista:'Alessandro W.',validado:false,disclaimer:true},
+  {id:5,empresa:'Saúde Eta Ltda',periodo:'Fev/2026',gerado:'06/03/2026',analista:'Alessandro W.',validado:true,disclaimer:false},
+];
+const USUARIOS = [
+  {id:1,nome:'Tessália Santos',email:'tessalia@propósito.com.br',perfil:'ANALISTA',status:'Ativo',empresas:8,ultimo:'Hoje'},
+  {id:2,nome:'Alessandro Bucker',email:'alessandro@propósito.com.br',perfil:'ANALISTA',status:'Ativo',empresas:7,ultimo:'Hoje'},
+  {id:3,nome:'Samara Malta',email:'samara@propósito.com.br',perfil:'ADM',status:'Ativo',empresas:34,ultimo:'Hoje'},
+  {id:4,nome:'Marlon Mendes',email:'marlon@propósito.com.br',perfil:'ANALISTA',status:'Ativo',empresas:5,ultimo:'Ontem'},
+  {id:5,nome:'Gabriel Duglokinski',email:'gabriel@propósito.com.br',perfil:'ANALISTA',status:'Ativo',empresas:6,ultimo:'Hoje'},
+  {id:6,nome:'João Contador',email:'joao@escritorio.com.br',perfil:'CONTADOR',status:'Ativo',empresas:3,ultimo:'03/03/2026'},
+  {id:7,nome:'Maria Contadora',email:'maria@escritorio.com.br',perfil:'CONTADOR',status:'Inativo',empresas:2,ultimo:'01/02/2026'},
+];
+
+const DOC_STATUS = {
+  'Processado':       {cls:'badge-done',       icon:'✓'},
+  'Em Processamento': {cls:'badge-processing', icon:'⟳'},
+  'Revisão Necessária':{cls:'badge-pending',   icon:'⚠'},
+  'Pendente':         {cls:'badge-error',      icon:'✗'},
+};
+const PERFIL_CLS = {ADM:'badge-adm',ANALISTA:'badge-analyst',CONTADOR:'badge-accountant'};
+
+function progBar(v) {
+  return `<div class="prog-cell"><div class="progress-track"><div class="progress-fill" style="width:${v}%"></div></div><span style="font-family:var(--font-mono);font-size:11px;color:var(--muted);width:28px">${v}%</span></div>`;
+}
+function confColor(c) {
+  return c>=80?'var(--success)':c>=60?'var(--warning)':'var(--danger)';
+}
+function moreBtn(id) {
+  return `<div class="dropdown"><button class="more-btn" data-dropdown="dd${id}"><svg viewBox="0 0 24 24"><circle cx="12" cy="5" r="1"/><circle cx="12" cy="12" r="1"/><circle cx="12" cy="19" r="1"/></svg></button>
+    <div class="dropdown-menu" id="dd${id}">
+      <button class="dropdown-item" onclick="location.href='tela-05-upload-ocr.html'"><svg width="13" height="13" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M1 12s4-8 11-8 11 8 11 8-4 8-11 8-11-8-11-8z"/><circle cx="12" cy="12" r="3"/></svg> Ver detalhes</button>
+      <button class="dropdown-item" onclick="location.href='tela-03-cadastro.html'"><svg width="13" height="13" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M11 4H4a2 2 0 00-2 2v14a2 2 0 002 2h14a2 2 0 002-2v-7"/><path d="M18.5 2.5a2.121 2.121 0 013 3L12 15l-4 1 1-4 9.5-9.5z"/></svg> Editar</button>
+      <div class="dropdown-sep"></div>
+      <button class="dropdown-item warn"><svg width="13" height="13" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><circle cx="12" cy="12" r="10"/><line x1="12" y1="8" x2="12" y2="12"/><line x1="12" y1="16" x2="12.01" y2="16"/></svg> Inativar</button>
+    </div></div>`;
+}
+
+let empPage=1, empSearch='', empStatus='Todos';
+const PER=5;
+
+function filteredEmpresas() {
+  return EMPRESAS.filter(e=>{
+    const ms = e.razao.toLowerCase().includes(empSearch.toLowerCase()) || e.cnpj.includes(empSearch);
+    const mx = empStatus==='Todos'||e.status===empStatus;
+    return ms&&mx;
+  });
+}
+function renderEmpresasTable() {
+  const list = filteredEmpresas();
+  const paged = list.slice((empPage-1)*PER, empPage*PER);
+  const pages = Math.ceil(list.length/PER)||1;
+  document.getElementById('emp-tbody').innerHTML = paged.length ? paged.map(e=>`
+    <tr>
+      <td><div style="font-size:13px;font-weight:500">${e.razao}</div><div style="font-size:11px;color:var(--muted)">${e.docs} docs · ${e.rel} relatórios</div></td>
+      <td><span style="font-family:var(--font-mono);font-size:11px;color:var(--muted)">${e.cnpj}</span></td>
+      <td style="font-size:12px">${e.seg}</td>
+      <td style="font-size:12px">${e.analista}</td>
+      <td>${progBar(e.prog)}</td>
+      <td><span class="badge ${e.status==='Ativo'?'badge-done':'badge-inactive'}">${e.status}</span></td>
+      <td>${moreBtn('e'+e.id)}</td>
+    </tr>`).join('') : `<tr><td colspan="7" style="text-align:center;padding:40px;color:var(--muted);font-size:13px">Nenhuma empresa encontrada.</td></tr>`;
+  const paginationBtns = Array.from({length:pages},(_,i)=>i+1).map(p=>
+    `<button class="page-btn${p===empPage?' active':''}" onclick="empPage=${p};renderEmpresasTable()">${p}</button>`).join('');
+  document.getElementById('emp-footer').innerHTML = `
+    <span>Mostrando ${Math.min((empPage-1)*PER+1,list.length)}–${Math.min(empPage*PER,list.length)} de ${list.length} registros</span>
+    <div class="pagination">
+      <button class="page-btn" onclick="if(empPage>1){empPage--;renderEmpresasTable()}" ${empPage===1?'disabled':''}>‹</button>
+      ${paginationBtns}
+      <button class="page-btn" onclick="if(empPage<${pages}){empPage++;renderEmpresasTable()}" ${empPage===pages?'disabled':''}>›</button>
+    </div>`;
+}
+
+setTimeout(() => {
+  document.getElementById('page-body').innerHTML = `
+    <div class="tabs-list">
+      <button class="tab-btn active" data-group="main" data-tab="tab-empresas">
+        <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M3 9l9-7 9 7v11a2 2 0 01-2 2H5a2 2 0 01-2-2z"/></svg>
+        Empresas (${EMPRESAS.length})
+      </button>
+      <button class="tab-btn" data-group="main" data-tab="tab-docs">
+        <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M14 2H6a2 2 0 00-2 2v16a2 2 0 002 2h12a2 2 0 002-2V8z"/><polyline points="14 2 14 8 20 8"/></svg>
+        Documentos (${DOCS.length})
+      </button>
+      <button class="tab-btn" data-group="main" data-tab="tab-rel">
+        <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><line x1="18" y1="20" x2="18" y2="10"/><line x1="12" y1="20" x2="12" y2="4"/><line x1="6" y1="20" x2="6" y2="14"/></svg>
+        Relatórios (${RELATORIOS.length})
+      </button>
+      <button class="tab-btn" data-group="main" data-tab="tab-users">
+        <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M17 21v-2a4 4 0 00-4-4H5a4 4 0 00-4 4v2"/><circle cx="9" cy="7" r="4"/><path d="M23 21v-2a4 4 0 00-3-3.87"/><path d="M16 3.13a4 4 0 010 7.75"/></svg>
+        Usuários (${USUARIOS.length})
+      </button>
+    </div>
+
+    <!-- EMPRESAS -->
+    <div class="tab-content active" id="tab-empresas" data-group="main">
+      <div class="panel">
+        <div class="toolbar">
+          <div class="search-wrap">
+            <svg viewBox="0 0 24 24"><circle cx="11" cy="11" r="8"/><line x1="21" y1="21" x2="16.65" y2="16.65"/></svg>
+            <input class="form-input" id="emp-search" placeholder="Buscar por razão social ou CNPJ... (RF10)" oninput="empSearch=this.value;empPage=1;renderEmpresasTable()"/>
+          </div>
+          <select class="select-sm" onchange="empStatus=this.value;empPage=1;renderEmpresasTable()">
+            <option>Todos</option><option>Ativo</option><option>Inativo</option>
+          </select>
+          <a href="tela-03-cadastro.html" class="btn btn-primary btn-sm" style="margin-left:auto">
+            <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><line x1="12" y1="5" x2="12" y2="19"/><line x1="5" y1="12" x2="19" y2="12"/></svg>
+            Nova Empresa
+          </a>
+        </div>
+        <div style="overflow-x:auto">
+          <table class="data-table">
+            <thead><tr><th>Empresa</th><th>CNPJ</th><th>Segmento</th><th>Analista</th><th>Progresso</th><th>Status</th><th></th></tr></thead>
+            <tbody id="emp-tbody"></tbody>
+          </table>
+        </div>
+        <div class="table-footer" id="emp-footer"></div>
+      </div>
+    </div>
+
+    <!-- DOCUMENTOS -->
+    <div class="tab-content" id="tab-docs" data-group="main">
+      <div class="panel">
+        <div class="toolbar">
+          <div class="search-wrap">
+            <svg viewBox="0 0 24 24"><circle cx="11" cy="11" r="8"/><line x1="21" y1="21" x2="16.65" y2="16.65"/></svg>
+            <input class="form-input" placeholder="Buscar documentos..."/>
+          </div>
+          <select class="select-sm">
+            <option>Todos os status</option><option>Processado</option><option>Em Processamento</option><option>Revisão Necessária</option><option>Pendente</option>
+          </select>
+          <a href="tela-05-upload-ocr.html" class="btn btn-primary btn-sm" style="margin-left:auto">
+            <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><line x1="12" y1="5" x2="12" y2="19"/><line x1="5" y1="12" x2="19" y2="12"/></svg>
+            Upload de Documento
+          </a>
+        </div>
+        <div style="overflow-x:auto">
+          <table class="data-table">
+            <thead><tr><th>Empresa</th><th>Tipo</th><th>Período</th><th>Status</th><th>Confiança OCR</th><th>Enviado em</th><th></th></tr></thead>
+            <tbody>
+              ${DOCS.map(d => {
+                const sc = DOC_STATUS[d.status];
+                const confCell = d.conf!==null
+                  ? `<div class="prog-cell"><div class="progress-track" style="width:60px"><div class="progress-fill" style="width:${d.conf}%;background:${confColor(d.conf)}"></div></div><span style="font-family:var(--font-mono);font-size:11px;font-weight:500;color:${confColor(d.conf)}">${d.conf}%</span></div>`
+                  : `<span style="color:var(--muted);font-size:12px">—</span>`;
+                return `<tr>
+                  <td style="font-size:12px;font-weight:500">${d.empresa}</td>
+                  <td style="font-size:12px">${d.tipo}</td>
+                  <td><span style="font-family:var(--font-mono);font-size:11px;color:var(--muted)">${d.periodo}</span></td>
+                  <td><span class="badge ${sc.cls}">${sc.icon} ${d.status}</span></td>
+                  <td>${confCell}</td>
+                  <td><span style="font-family:var(--font-mono);font-size:11px;color:var(--muted)">${d.enviado}</span></td>
+                  <td>${moreBtn('d'+d.id)}</td>
+                </tr>`;
+              }).join('')}
+            </tbody>
+          </table>
+        </div>
+        <div class="table-footer"><span>${DOCS.length} documentos</span></div>
+      </div>
+    </div>
+
+    <!-- RELATÓRIOS -->
+    <div class="tab-content" id="tab-rel" data-group="main">
+      <div class="panel">
+        <div class="panel-header">
+          <div>
+            <div class="panel-title">Histórico de Relatórios</div>
+            <div class="panel-sub">RF31 — Registro para auditoria e rastreabilidade</div>
+          </div>
+        </div>
+        <div style="overflow-x:auto">
+          <table class="data-table">
+            <thead><tr><th>Empresa</th><th>Período</th><th>Gerado em</th><th>Analista</th><th>Validação Manual</th><th>Disclaimer</th><th></th></tr></thead>
+            <tbody>
+              ${RELATORIOS.map(r=>`<tr>
+                <td style="font-size:12px;font-weight:500">${r.empresa}</td>
+                <td><span style="font-family:var(--font-mono);font-size:11px;color:var(--muted)">${r.periodo}</span></td>
+                <td><span style="font-family:var(--font-mono);font-size:11px;color:var(--muted)">${r.gerado}</span></td>
+                <td style="font-size:12px">${r.analista}</td>
+                <td>${r.validado?`<span class="badge badge-done">✓ Validado</span>`:`<span class="badge badge-pending">⚠ Pendente</span>`}</td>
+                <td>${r.disclaimer?`<span class="badge badge-error">⚠ Com aviso (RF30)</span>`:`<span style="color:var(--muted);font-size:12px">—</span>`}</td>
+                <td><button class="dl-link"><svg viewBox="0 0 24 24"><path d="M21 15v4a2 2 0 01-2 2H5a2 2 0 01-2-2v-4"/><polyline points="7 10 12 15 17 10"/><line x1="12" y1="15" x2="12" y2="3"/></svg> PDF (RF30)</button></td>
+              </tr>`).join('')}
+            </tbody>
+          </table>
+        </div>
+        <div class="table-footer"><span>${RELATORIOS.length} relatórios no histórico</span></div>
+      </div>
+    </div>
+
+    <!-- USUÁRIOS -->
+    <div class="tab-content" id="tab-users" data-group="main">
+      <div class="panel">
+        <div class="toolbar">
+          <div class="search-wrap">
+            <svg viewBox="0 0 24 24"><circle cx="11" cy="11" r="8"/><line x1="21" y1="21" x2="16.65" y2="16.65"/></svg>
+            <input class="form-input" placeholder="Buscar usuários..."/>
+          </div>
+          <a href="tela-03-cadastro.html" class="btn btn-primary btn-sm" style="margin-left:auto">
+            <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><line x1="12" y1="5" x2="12" y2="19"/><line x1="5" y1="12" x2="19" y2="12"/></svg>
+            Novo Usuário
+          </a>
+        </div>
+        <div style="overflow-x:auto">
+          <table class="data-table">
+            <thead><tr><th>Usuário</th><th>E-mail</th><th>Perfil (RF04)</th><th>Empresas</th><th>Último Acesso</th><th>Status (RF05)</th><th></th></tr></thead>
+            <tbody>
+              ${USUARIOS.map(u=>`<tr>
+                <td>
+                  <div style="display:flex;align-items:center;gap:10px">
+                    <div style="width:28px;height:28px;border-radius:50%;background:var(--cobalt);display:flex;align-items:center;justify-content:center;font-size:11px;font-weight:700;color:#fff;flex-shrink:0">${u.nome.charAt(0)}</div>
+                    <span style="font-size:13px;font-weight:500">${u.nome}</span>
+                  </div>
+                </td>
+                <td><span style="font-family:var(--font-mono);font-size:11px;color:var(--muted)">${u.email}</span></td>
+                <td><span class="badge ${PERFIL_CLS[u.perfil]}">${u.perfil}</span></td>
+                <td style="font-family:var(--font-mono);font-size:12px;color:var(--muted)">${u.empresas}</td>
+                <td style="font-size:12px;color:var(--muted)">${u.ultimo}</td>
+                <td><span class="badge ${u.status==='Ativo'?'badge-done':'badge-inactive'}">${u.status}</span></td>
+                <td>${moreBtn('u'+u.id)}</td>
+              </tr>`).join('')}
+            </tbody>
+          </table>
+        </div>
+        <div class="table-footer"><span>${USUARIOS.length} usuários cadastrados</span></div>
+      </div>
+    </div>
+  `;
+
+  renderEmpresasTable();
+
+  // Tabs
+  document.querySelectorAll('.tab-btn').forEach(btn => {
+    btn.addEventListener('click', function(){
+      document.querySelectorAll(`.tab-btn[data-group="${this.dataset.group}"]`).forEach(b=>b.classList.remove('active'));
+      document.querySelectorAll(`.tab-content[data-group="${this.dataset.group}"]`).forEach(c=>c.classList.remove('active'));
+      this.classList.add('active');
+      document.getElementById(this.dataset.tab)?.classList.add('active');
+    });
+  });
+}, 0);
+</script>
+<script src="../js/app.js"></script>
+</body>
+</html>

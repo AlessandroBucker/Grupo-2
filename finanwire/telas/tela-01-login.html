@@ -1,0 +1,335 @@
+<!DOCTYPE html>
+<html lang="pt-BR">
+<head>
+  <meta charset="UTF-8"/>
+  <meta name="viewport" content="width=device-width, initial-scale=1.0"/>
+  <title>Login — FinanceIA</title>
+  <link rel="stylesheet" href="../css/global.css"/>
+  <style>
+    body { margin:0; background:#fff; min-height:100vh; }
+    .login-wrap { display:flex; min-height:100vh; }
+
+    /* ── Left panel ── */
+    .login-left {
+      width:58%; flex-shrink:0;
+      background: var(--navy);
+      position:relative; overflow:hidden;
+      display:flex; flex-direction:column; justify-content:space-between;
+      padding:48px;
+    }
+    @media(max-width:1024px){ .login-left { display:none; } }
+    .login-left-bg {
+      position:absolute; inset:0;
+      background-image:url('https://d2xsxph8kpxj0f.cloudfront.net/310519663410722340/WQtpETfEPXRPhmUBms2Ywx/hero-finance-bg-Ld6DFM6Not69sTSpKCvery.webp');
+      background-size:cover; background-position:center; opacity:.3;
+    }
+    .login-left-overlay {
+      position:absolute; inset:0;
+      background:linear-gradient(135deg,rgba(15,28,46,.85) 0%,rgba(26,86,219,.15) 100%);
+    }
+    .login-left-content { position:relative; z-index:1; }
+    .left-logo { display:flex; align-items:center; gap:12px; margin-bottom:64px; }
+    .left-logo-icon {
+      width:40px; height:40px; background:var(--cobalt); border-radius:8px;
+      display:flex; align-items:center; justify-content:center;
+    }
+    .left-logo-icon svg { width:20px; height:20px; stroke:#fff; fill:none; }
+    .left-logo-name { font-size:18px; font-weight:600; color:#fff; }
+    .left-logo-sub  { font-size:12px; color:rgba(255,255,255,.45); }
+    .left-title { font-size:clamp(28px,3vw,36px); font-weight:700; color:#fff; line-height:1.2; margin-bottom:14px; }
+    .left-title span { color:var(--cobalt-light); }
+    .left-desc { font-size:15px; color:rgba(255,255,255,.65); line-height:1.65; margin-bottom:40px; max-width:400px; }
+    .left-features { display:flex; flex-direction:column; gap:14px; }
+    .left-feature { display:flex; align-items:center; gap:12px; font-size:14px; color:rgba(255,255,255,.70); }
+    .left-feature-emoji { font-size:18px; }
+    .left-footer { position:relative; z-index:1; display:flex; align-items:center; gap:8px; }
+    .left-footer svg { width:14px; height:14px; stroke:rgba(255,255,255,.35); fill:none; }
+    .left-footer span { font-size:12px; color:rgba(255,255,255,.35); }
+
+    /* ── Right panel ── */
+    .login-right {
+      flex:1;
+      display:flex; flex-direction:column; justify-content:center; align-items:center;
+      padding:48px 32px;
+      background:#fff;
+    }
+    .login-form-box { width:100%; max-width:340px; }
+
+    /* Mobile logo */
+    .mobile-logo { display:none; align-items:center; gap:10px; margin-bottom:32px; }
+    @media(max-width:1024px){ .mobile-logo { display:flex; } }
+    .mobile-logo-icon { width:34px; height:34px; background:var(--cobalt); border-radius:6px; display:flex; align-items:center; justify-content:center; }
+    .mobile-logo-icon svg { width:16px; height:16px; stroke:#fff; fill:none; }
+
+    /* Form title */
+    .form-title { font-size:22px; font-weight:600; color:var(--text); margin-bottom:4px; }
+    .form-sub   { font-size:13px; color:var(--muted); margin-bottom:24px; }
+
+    /* Input with icon */
+    .input-icon-wrap { position:relative; }
+    .input-icon-wrap .form-input { padding-left:36px; }
+    .input-left-icon {
+      position:absolute; left:10px; top:50%; transform:translateY(-50%);
+      width:15px; height:15px; color:var(--muted);
+    }
+    .input-left-icon svg { width:100%; height:100%; stroke:currentColor; fill:none; }
+    .input-right-btn {
+      position:absolute; right:10px; top:50%; transform:translateY(-50%);
+      background:none; border:none; color:var(--muted); cursor:pointer; padding:0;
+      display:flex; align-items:center;
+    }
+    .input-right-btn svg { width:15px; height:15px; stroke:currentColor; fill:none; }
+
+    /* LGPD box */
+    .lgpd-box {
+      display:flex; align-items:flex-start; gap:10px;
+      background:#EFF6FF; border:1px solid #BFDBFE;
+      border-radius:var(--radius); padding:12px;
+      margin-bottom:4px;
+    }
+    .lgpd-box label { font-size:12px; color:var(--muted); line-height:1.55; cursor:pointer; }
+    .lgpd-box label a { color:var(--cobalt); }
+    .lgpd-box input[type=checkbox] { margin-top:2px; accent-color:var(--cobalt); flex-shrink:0; }
+
+    /* Error */
+    .error-box {
+      display:flex; align-items:flex-start; gap:8px;
+      background:#FEF2F2; border:1px solid #FECACA;
+      border-radius:var(--radius); padding:10px 12px;
+      margin-bottom:12px; font-size:13px; color:#B91C1C;
+    }
+    .error-box svg { width:14px; height:14px; flex-shrink:0; margin-top:1px; stroke:currentColor; fill:none; }
+
+    /* Forgot link */
+    .forgot-link { font-size:12px; color:var(--cobalt); background:none; border:none; cursor:pointer; padding:0; }
+
+    /* Demo section */
+    .demo-section { margin-top:20px; padding-top:20px; border-top:1px solid var(--border); }
+    .demo-header  { display:flex; align-items:center; gap:6px; margin-bottom:6px; }
+    .demo-header svg { width:13px; height:13px; fill:var(--warning); }
+    .demo-header span { font-size:12px; font-weight:600; color:var(--muted); }
+    .demo-desc { font-size:12px; color:var(--muted); margin-bottom:10px; }
+    .demo-profiles { display:flex; flex-direction:column; gap:8px; }
+    .demo-profile-btn {
+      display:flex; align-items:flex-start; justify-content:space-between;
+      padding:12px; border-radius:var(--radius); border:2px solid;
+      text-align:left; background:#fff; cursor:pointer;
+      transition:box-shadow .15s;
+    }
+    .demo-profile-btn:hover { box-shadow:0 2px 8px rgba(0,0,0,.12); }
+    .demo-profile-btn.adm       { border-color:#DDD6FE; }
+    .demo-profile-btn.analyst   { border-color:#BFDBFE; }
+    .demo-profile-btn.accountant{ border-color:#99F6E4; }
+    .demo-profile-label { font-size:13px; font-weight:600; }
+    .demo-profile-name  { font-size:11px; color:var(--muted); margin-top:2px; }
+    .demo-profile-desc  { font-size:11px; color:var(--muted); margin-top:4px; opacity:.7; }
+    .demo-profile-emoji { font-size:20px; }
+
+    /* Attempts counter */
+    .attempts-counter { font-size:12px; color:var(--muted); text-align:center; margin-top:8px; }
+
+    /* Forgot flow */
+    .forgot-back { font-size:13px; color:var(--cobalt); background:none; border:none; cursor:pointer; padding:0; display:flex; align-items:center; gap:4px; margin-bottom:16px; }
+    .sent-check {
+      width:48px; height:48px; border-radius:50%; background:#ECFDF5;
+      display:flex; align-items:center; justify-content:center; margin:0 auto 16px;
+    }
+    .sent-check svg { width:24px; height:24px; stroke:var(--success); fill:none; }
+
+    .form-row  { margin-bottom:16px; }
+    .form-row-inline { display:flex; align-items:center; justify-content:space-between; margin-bottom:5px; }
+    .btn-block { width:100%; justify-content:center; padding:10px 16px; font-size:14px; }
+    .mt-4 { margin-top:4px; }
+    .mt-12{ margin-top:12px; }
+    .mt-16{ margin-top:16px; }
+  </style>
+</head>
+<body>
+<div class="login-wrap">
+
+  <!-- LEFT -->
+  <div class="login-left">
+    <div class="login-left-bg"></div>
+    <div class="login-left-overlay"></div>
+    <div class="login-left-content">
+      <div class="left-logo">
+        <div class="left-logo-icon">
+          <svg viewBox="0 0 24 24"><line x1="18" y1="20" x2="18" y2="10"/><line x1="12" y1="20" x2="12" y2="4"/><line x1="6" y1="20" x2="6" y2="14"/></svg>
+        </div>
+        <div>
+          <div class="left-logo-name">FinanceIA</div>
+          <div class="left-logo-sub">Propósito Partners</div>
+        </div>
+      </div>
+      <h1 class="left-title">Análise Financeira<br /><span>Automatizada com IA</span></h1>
+      <p class="left-desc">Extraia, analise e gere relatórios financeiros de forma automática. Reduza o tempo de análise de 2 dias para poucas horas.</p>
+      <div class="left-features">
+        <div class="left-feature"><span class="left-feature-emoji">📄</span> Upload de DRE, Balanço e Balancete</div>
+        <div class="left-feature"><span class="left-feature-emoji">🔍</span> Extração automática via OCR</div>
+        <div class="left-feature"><span class="left-feature-emoji">📊</span> Indicadores financeiros calculados automaticamente</div>
+        <div class="left-feature"><span class="left-feature-emoji">📋</span> Relatórios em PDF com governança</div>
+      </div>
+    </div>
+    <div class="left-footer">
+      <svg viewBox="0 0 24 24"><path d="M12 22s8-4 8-10V5l-8-3-8 3v7c0 6 8 10 8 10z"/></svg>
+      <span>Dados protegidos conforme LGPD — TLS + criptografia em repouso</span>
+    </div>
+  </div>
+
+  <!-- RIGHT -->
+  <div class="login-right">
+    <div class="login-form-box">
+
+      <div class="mobile-logo">
+        <div class="mobile-logo-icon">
+          <svg viewBox="0 0 24 24"><line x1="18" y1="20" x2="18" y2="10"/><line x1="12" y1="20" x2="12" y2="4"/><line x1="6" y1="20" x2="6" y2="14"/></svg>
+        </div>
+        <div>
+          <div style="font-size:15px;font-weight:600">FinanceIA</div>
+          <div style="font-size:12px;color:var(--muted)">Propósito Partners</div>
+        </div>
+      </div>
+
+      <!-- LOGIN VIEW -->
+      <div id="view-login">
+        <h2 class="form-title">Entrar na plataforma</h2>
+        <p class="form-sub">Use seu e-mail e senha cadastrados</p>
+
+        <div id="error-box" class="error-box" style="display:none">
+          <svg viewBox="0 0 24 24"><circle cx="12" cy="12" r="10"/><line x1="15" y1="9" x2="9" y2="15"/><line x1="9" y1="9" x2="15" y2="15"/></svg>
+          <span id="error-msg"></span>
+        </div>
+
+        <form id="login-form">
+          <div class="form-row">
+            <label class="form-label" for="email">E-mail</label>
+            <div class="input-icon-wrap">
+              <span class="input-left-icon"><svg viewBox="0 0 24 24"><path d="M4 4h16c1.1 0 2 .9 2 2v12c0 1.1-.9 2-2 2H4c-1.1 0-2-.9-2-2V6c0-1.1.9-2 2-2z"/><polyline points="22,6 12,13 2,6"/></svg></span>
+              <input id="email" type="email" class="form-input" placeholder="seu@email.com.br" />
+            </div>
+          </div>
+          <div class="form-row">
+            <div class="form-row-inline">
+              <label class="form-label" for="password" style="margin:0">Senha</label>
+              <button type="button" class="forgot-link" onclick="showView('forgot')">Esqueci minha senha</button>
+            </div>
+            <div class="input-icon-wrap">
+              <span class="input-left-icon"><svg viewBox="0 0 24 24"><rect x="3" y="11" width="18" height="11" rx="2" ry="2"/><path d="M7 11V7a5 5 0 0110 0v4"/></svg></span>
+              <input id="password" type="password" class="form-input" placeholder="••••••••" style="padding-left:36px;padding-right:38px"/>
+              <button type="button" class="input-right-btn" onclick="togglePwd(this)">
+                <svg id="eye-icon" viewBox="0 0 24 24"><path d="M1 12s4-8 11-8 11 8 11 8-4 8-11 8-11-8-11-8z"/><circle cx="12" cy="12" r="3"/></svg>
+              </button>
+            </div>
+          </div>
+
+          <div class="lgpd-box">
+            <input type="checkbox" id="lgpd" />
+            <label for="lgpd">
+              Li e aceito os <a href="#">Termos de Uso e Política de Privacidade</a>,
+              autorizando o tratamento dos meus dados conforme a <strong>LGPD</strong>. (RF23)
+            </label>
+          </div>
+
+          <button type="submit" class="btn btn-primary btn-block mt-16" style="background:var(--cobalt)">Entrar</button>
+        </form>
+
+        <p class="attempts-counter" id="attempts-text" style="display:none"></p>
+
+        <!-- Parceiro section -->
+        <div class="demo-section" style="margin-top:24px;border-top:1px solid var(--border);padding-top:24px;">
+          <div style="text-align:center">
+            <p style="font-size:13px;color:var(--muted);margin-bottom:12px;">Quer fazer parte da rede Propósito Partners?</p>
+            <a href="tela-04-parceiro.html" class="btn btn-outline" style="width:100%;text-align:center;justify-content:center;background:rgba(124,58,237,.05);border-color:var(--purple);color:var(--purple)">
+              <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+                <path d="M12 5v14M5 12h14"/>
+              </svg>
+              QUERO SER PARCEIRO
+            </a>
+          </div>
+        </div>
+      </div>
+
+      <!-- FORGOT VIEW -->
+      <div id="view-forgot" style="display:none">
+        <button class="forgot-back" onclick="showView('login')">← Voltar ao login</button>
+        <h2 class="form-title">Recuperar senha</h2>
+        <p class="form-sub">Informe seu e-mail para receber instruções de recuperação</p>
+
+        <div id="forgot-form-wrap">
+          <div class="form-row">
+            <label class="form-label" for="forgot-email">E-mail cadastrado</label>
+            <div class="input-icon-wrap">
+              <span class="input-left-icon"><svg viewBox="0 0 24 24"><path d="M4 4h16c1.1 0 2 .9 2 2v12c0 1.1-.9 2-2 2H4c-1.1 0-2-.9-2-2V6c0-1.1.9-2 2-2z"/><polyline points="22,6 12,13 2,6"/></svg></span>
+              <input id="forgot-email" type="email" class="form-input" placeholder="seu@email.com.br" />
+            </div>
+          </div>
+          <button class="btn btn-primary btn-block" style="background:var(--cobalt)" onclick="sendForgot()">Enviar instruções</button>
+        </div>
+
+        <div id="forgot-sent" style="display:none;text-align:center">
+          <div class="sent-check"><svg viewBox="0 0 24 24"><polyline points="20 6 9 17 4 12"/></svg></div>
+          <h3 style="font-size:16px;font-weight:600;margin-bottom:4px">E-mail enviado!</h3>
+          <p style="font-size:13px;color:var(--muted);margin-bottom:20px">Verifique sua caixa de entrada e clique no link para redefinir sua senha.</p>
+          <button class="btn btn-outline btn-block" onclick="showView('login')">Voltar ao login</button>
+        </div>
+      </div>
+
+    </div>
+  </div>
+</div>
+
+<script>
+let attempts = 0;
+
+function showView(v) {
+  document.getElementById('view-login').style.display  = v==='login'  ? 'block' : 'none';
+  document.getElementById('view-forgot').style.display = v==='forgot' ? 'block' : 'none';
+}
+
+function togglePwd(btn) {
+  const inp = document.getElementById('password');
+  inp.type = inp.type === 'password' ? 'text' : 'password';
+}
+
+function showError(msg) {
+  const box = document.getElementById('error-box');
+  document.getElementById('error-msg').textContent = msg;
+  box.style.display = 'flex';
+}
+
+function demoLogin() {
+  window.location.href = 'tela-02-dashboard.html';
+}
+
+document.getElementById('login-form').addEventListener('submit', function(e) {
+  e.preventDefault();
+  const email = document.getElementById('email').value;
+  const pwd   = document.getElementById('password').value;
+  const lgpd  = document.getElementById('lgpd').checked;
+
+  if (!lgpd) {
+    showError('Você precisa aceitar os Termos de Uso e Política de Privacidade (LGPD) para continuar.');
+    return;
+  }
+  if (attempts >= 4) {
+    showError('Conta temporariamente bloqueada após 5 tentativas inválidas.');
+    return;
+  }
+  if (email && pwd) {
+    window.location.href = 'tela-02-dashboard.html';
+  } else {
+    attempts++;
+    showError(`E-mail ou senha inválidos. Tentativa ${attempts}/5.`);
+    const txt = document.getElementById('attempts-text');
+    txt.style.display = 'block';
+    txt.textContent = `${5-attempts} tentativa${5-attempts!==1?'s':''} restante${5-attempts!==1?'s':''} antes do bloqueio`;
+  }
+});
+
+function sendForgot() {
+  document.getElementById('forgot-form-wrap').style.display = 'none';
+  document.getElementById('forgot-sent').style.display = 'block';
+}
+</script>
+</body>
+</html>

@@ -1,0 +1,471 @@
+<!DOCTYPE html>
+<html lang="pt-BR">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>Serviços para Empresas — Propósito Partners</title>
+  <link rel="stylesheet" href="../css/global.css" />
+  <style>
+    body { margin: 0; background: var(--bg); }
+
+    /* Header */
+    .site-header {
+      background: var(--surface);
+      border-bottom: 1px solid var(--border);
+      position: sticky; top: 0; z-index: 100;
+    }
+    .site-header-inner {
+      max-width: 1152px;
+      margin: 0 auto;
+      padding: 0 24px;
+      height: 56px;
+      display: flex;
+      align-items: center;
+      justify-content: space-between;
+      gap: 16px;
+    }
+    .header-logo {
+      display: flex; align-items: center; gap: 12px; cursor: pointer;
+    }
+    .header-logo-icon {
+      width: 36px; height: 36px;
+      background: var(--navy);
+      border-radius: 8px;
+      display: flex; align-items: center; justify-content: center;
+      flex-shrink: 0;
+    }
+    .header-logo-icon svg { width: 18px; height: 18px; color: #fff; stroke: #fff; }
+    .header-logo-name { font-size: 14px; font-weight: 600; color: var(--text); }
+    .header-logo-sub { font-size: 12px; color: var(--muted); }
+    .header-actions { display: flex; gap: 12px; }
+
+    /* Page container */
+    .page-container {
+      max-width: 1152px;
+      margin: 0 auto;
+      padding: 40px 24px;
+    }
+
+    /* Breadcrumb */
+    .breadcrumb {
+      display: flex;
+      align-items: center;
+      gap: 8px;
+      font-size: 13px;
+      color: var(--muted);
+      margin-bottom: 24px;
+    }
+    .breadcrumb a {
+      color: var(--cobalt);
+      text-decoration: none;
+    }
+    .breadcrumb a:hover { text-decoration: underline; }
+    .breadcrumb svg { width: 14px; height: 14px; }
+
+    /* Page title */
+    .page-title { font-size: 32px; font-weight: 700; color: var(--text); margin-bottom: 8px; }
+    .page-subtitle { font-size: 15px; color: var(--muted); margin-bottom: 40px; max-width: 600px; }
+
+    /* Content grid */
+    .content-grid {
+      display: grid;
+      grid-template-columns: 1fr 380px;
+      gap: 40px;
+    }
+
+    /* Services section */
+    .services-list {
+      display: flex;
+      flex-direction: column;
+      gap: 20px;
+    }
+
+    .service-item {
+      background: var(--surface);
+      border: 2px solid var(--border);
+      border-radius: var(--radius);
+      padding: 24px;
+      cursor: pointer;
+      transition: all .2s;
+      position: relative;
+    }
+    .service-item:hover {
+      border-color: var(--success);
+      box-shadow: 0 4px 12px rgba(5,150,105,.15);
+    }
+    .service-item input[type="radio"] {
+      position: absolute;
+      opacity: 0;
+      width: 100%;
+      height: 100%;
+      cursor: pointer;
+      top: 0;
+      left: 0;
+    }
+    .service-item.selected {
+      border-color: var(--success);
+      background: rgba(5,150,105,.05);
+    }
+
+    .service-header {
+      display: flex;
+      align-items: flex-start;
+      gap: 16px;
+      margin-bottom: 12px;
+    }
+    .service-check {
+      width: 20px;
+      height: 20px;
+      border: 2px solid var(--border);
+      border-radius: 50%;
+      flex-shrink: 0;
+      margin-top: 2px;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+    }
+    .service-item.selected .service-check {
+      border-color: var(--success);
+      background: var(--success);
+      color: #fff;
+    }
+    .service-check svg { width: 12px; height: 12px; stroke: currentColor; fill: none; }
+
+    .service-content { flex: 1; }
+    .service-title { font-size: 16px; font-weight: 600; color: var(--text); margin-bottom: 4px; }
+    .service-desc { font-size: 13px; color: var(--muted); line-height: 1.6; }
+
+    /* Form sidebar */
+    .form-sidebar {
+      background: var(--surface);
+      border: 1px solid var(--border);
+      border-radius: var(--radius);
+      padding: 28px;
+      height: fit-content;
+      position: sticky;
+      top: 80px;
+    }
+
+    .form-sidebar h3 {
+      font-size: 16px;
+      font-weight: 600;
+      color: var(--text);
+      margin-bottom: 20px;
+    }
+
+    .form-group {
+      margin-bottom: 18px;
+    }
+    .form-group:last-child { margin-bottom: 0; }
+
+    .form-label {
+      display: block;
+      font-size: 13px;
+      font-weight: 500;
+      margin-bottom: 6px;
+      color: var(--text);
+    }
+    .form-label .req { color: var(--danger); }
+
+    .form-input {
+      width: 100%;
+      padding: 10px 12px;
+      border: 1px solid var(--border);
+      border-radius: var(--radius);
+      font-size: 13px;
+      color: var(--text);
+      background: #fff;
+      outline: none;
+      transition: border-color .15s;
+    }
+    .form-input:focus {
+      border-color: var(--success);
+      box-shadow: 0 0 0 3px rgba(5,150,105,.12);
+    }
+
+    .checkbox-label {
+      display: flex;
+      align-items: flex-start;
+      gap: 8px;
+      font-size: 12px;
+      color: var(--muted);
+      line-height: 1.5;
+      cursor: pointer;
+    }
+    .checkbox-label input[type="checkbox"] {
+      margin-top: 3px;
+      flex-shrink: 0;
+      accent-color: var(--success);
+    }
+    .checkbox-label a { color: var(--cobalt); text-decoration: none; }
+    .checkbox-label a:hover { text-decoration: underline; }
+
+    .submit-section { margin-top: 20px; }
+    .btn-submit {
+      width: 100%;
+      padding: 12px 16px;
+      background: var(--success);
+      color: #fff;
+      border: none;
+      border-radius: var(--radius);
+      font-size: 14px;
+      font-weight: 600;
+      cursor: pointer;
+      transition: opacity .2s;
+    }
+    .btn-submit:hover { opacity: .88; }
+    .btn-submit:disabled {
+      opacity: .5;
+      cursor: not-allowed;
+    }
+
+    .form-note { 
+      font-size: 11px;
+      color: var(--muted);
+      margin-top: 12px;
+      line-height: 1.5;
+    }
+
+    @media(max-width: 768px) {
+      .content-grid { grid-template-columns: 1fr; }
+      .form-sidebar { position: relative; top: 0; }
+    }
+  </style>
+</head>
+<body>
+
+  <!-- Header -->
+  <header class="site-header">
+    <div class="site-header-inner">
+      <div class="header-logo" onclick="window.location.href='tela-00-landing.html'">
+        <div class="header-logo-icon">
+          <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+            <path d="M12 2C6.48 2 2 6.48 2 12s4.48 10 10 10 10-4.48 10-10S17.52 2 12 2zm0 18c-4.41 0-8-3.59-8-8s3.59-8 8-8 8 3.59 8 8-3.59 8-8 8zm-5-9h10v2H7z"/>
+          </svg>
+        </div>
+        <div>
+          <div class="header-logo-name">Propósito Partners</div>
+          <div class="header-logo-sub">Serviços B2B</div>
+        </div>
+      </div>
+      <div class="header-actions">
+        <a href="tela-00-landing.html" class="btn btn-outline btn-sm">Voltar</a>
+      </div>
+    </div>
+  </header>
+
+  <!-- Main content -->
+  <div class="page-container">
+
+    <!-- Breadcrumb -->
+    <div class="breadcrumb">
+      <a href="tela-00-landing.html">
+        <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+          <path d="M19 12H5M12 19l-7-7 7-7"/>
+        </svg>
+      </a>
+      <span>/</span>
+      <span>Empresa</span>
+    </div>
+
+    <h1 class="page-title">Serviços para Empresas</h1>
+    <p class="page-subtitle">
+      Consultoria financeira avançada e soluções estratégicas para estruturação, gestão e crescimento da sua empresa.
+    </p>
+
+    <!-- Content -->
+    <div class="content-grid">
+
+      <!-- Services list -->
+      <div class="services-list" id="servicesList">
+        <label class="service-item selected">
+          <input type="radio" name="service" value="estruturacao-credito" checked />
+          <div class="service-header">
+            <div class="service-check">
+              <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+                <polyline points="20 6 9 17 4 12"/>
+              </svg>
+            </div>
+            <div class="service-content">
+              <div class="service-title">Estruturação de Crédito</div>
+              <div class="service-desc">
+                Acesso a linhas de crédito estruturadas e personalizadas para capital de giro, investimento e financiamentos.
+              </div>
+            </div>
+          </div>
+        </label>
+
+        <label class="service-item">
+          <input type="radio" name="service" value="gestao-investimentos" />
+          <div class="service-header">
+            <div class="service-check">
+              <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+                <polyline points="20 6 9 17 4 12"/>
+              </svg>
+            </div>
+            <div class="service-content">
+              <div class="service-title">Gestão de Investimentos Corporativos</div>
+              <div class="service-desc">
+                Otimize o retorno sobre investimentos e gerencie excedentes de caixa com estratégias personalizadas.
+              </div>
+            </div>
+          </div>
+        </label>
+
+        <label class="service-item">
+          <input type="radio" name="service" value="holding-patrimonial" />
+          <div class="service-header">
+            <div class="service-check">
+              <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+                <polyline points="20 6 9 17 4 12"/>
+              </svg>
+            </div>
+            <div class="service-content">
+              <div class="service-title">Estruturação de Holdings Patrimoniais</div>
+              <div class="service-desc">
+                Organize sua estrutura patrimonial e societária para otimização fiscal e melhor governança.
+              </div>
+            </div>
+          </div>
+        </label>
+
+        <label class="service-item">
+          <input type="radio" name="service" value="m-a" />
+          <div class="service-header">
+            <div class="service-check">
+              <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+                <polyline points="20 6 9 17 4 12"/>
+              </svg>
+            </div>
+            <div class="service-content">
+              <div class="service-title">Assessoria em M&A</div>
+              <div class="service-desc">
+                Suporte completo em fusões, aquisições e processos estratégicos de desinvestimento.
+              </div>
+            </div>
+          </div>
+        </label>
+
+        <label class="service-item">
+          <input type="radio" name="service" value="derivativos-cambio" />
+          <div class="service-header">
+            <div class="service-check">
+              <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+                <polyline points="20 6 9 17 4 12"/>
+              </svg>
+            </div>
+            <div class="service-content">
+              <div class="service-title">Derivativos e Estruturação de Câmbio</div>
+              <div class="service-desc">
+                Proteção de riscos cambiais, de taxa de juros e commodities com instrumentos estruturados.
+              </div>
+            </div>
+          </div>
+        </label>
+
+        <label class="service-item">
+          <input type="radio" name="service" value="consultoria-estrategica" />
+          <div class="service-header">
+            <div class="service-check">
+              <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+                <polyline points="20 6 9 17 4 12"/>
+              </svg>
+            </div>
+            <div class="service-content">
+              <div class="service-title">Consultoria Estratégica Financeira</div>
+              <div class="service-desc">
+                Estratégias customizadas de planejamento financeiro, gestão de riscos e otimização fiscal.
+              </div>
+            </div>
+          </div>
+        </label>
+      </div>
+
+      <!-- Form sidebar -->
+      <form class="form-sidebar" id="interesseForm" onsubmit="handleFormSubmit(event)">
+        <h3>Demonstre Interesse</h3>
+
+        <div class="form-group">
+          <label class="form-label">Nome da Empresa <span class="req">*</span></label>
+          <input type="text" class="form-input" name="empresa" required />
+        </div>
+
+        <div class="form-group">
+          <label class="form-label">Seu Nome <span class="req">*</span></label>
+          <input type="text" class="form-input" name="nome" required />
+        </div>
+
+        <div class="form-group">
+          <label class="form-label">Email <span class="req">*</span></label>
+          <input type="email" class="form-input" name="email" required />
+        </div>
+
+        <div class="form-group">
+          <label class="form-label">Telefone <span class="req">*</span></label>
+          <input type="tel" class="form-input" name="telefone" placeholder="(11) 99999-9999" required />
+        </div>
+
+        <div class="form-group">
+          <label class="form-label">Ramo de Atuação <span class="req">*</span></label>
+          <input type="text" class="form-input" name="ramo" placeholder="Ex: Varejo, Manufatura..." required />
+        </div>
+
+        <div class="form-group">
+          <label class="form-label">Mensagem (Opcional)</label>
+          <textarea class="form-input" name="mensagem" rows="3" style="resize: none;"></textarea>
+        </div>
+
+        <div class="form-group">
+          <label class="checkbox-label">
+            <input type="checkbox" name="privacidade" required />
+            <span>Concordo com a <a href="#">Política de Privacidade</a> e autorizo contato</span>
+          </label>
+        </div>
+
+        <div class="submit-section">
+          <button type="submit" class="btn-submit">Enviar Interesse</button>
+          <p class="form-note">
+            Um especialista entrará em contato em até 24 horas para discutir as necessidades da sua empresa.
+          </p>
+        </div>
+      </form>
+
+    </div>
+
+  </div>
+
+  <script>
+    // Handle service selection
+    document.querySelectorAll('input[name="service"]').forEach(radio => {
+      radio.addEventListener('change', (e) => {
+        document.querySelectorAll('.service-item').forEach(item => item.classList.remove('selected'));
+        e.target.closest('.service-item').classList.add('selected');
+      });
+    });
+
+    // Handle form submission
+    function handleFormSubmit(e) {
+      e.preventDefault();
+      const formData = new FormData(document.getElementById('interesseForm'));
+      const service = document.querySelector('input[name="service"]:checked').value;
+      
+      const data = {
+        tipo: 'empresa',
+        servico: service,
+        empresa: formData.get('empresa'),
+        nome: formData.get('nome'),
+        email: formData.get('email'),
+        telefone: formData.get('telefone'),
+        ramo: formData.get('ramo'),
+        mensagem: formData.get('mensagem'),
+        data: new Date().toISOString()
+      };
+
+      console.log('Interesse registrado:', data);
+      alert('Obrigado! Seu interesse foi registrado. Entraremos em contato em breve.');
+      document.getElementById('interesseForm').reset();
+    }
+  </script>
+
+</body>
+</html>
